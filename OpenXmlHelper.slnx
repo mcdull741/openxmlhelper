@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/OpenXmlHelper/OpenXmlHelper.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/OpenXmlHelper.Tests/OpenXmlHelper.Tests.csproj" />
+  </Folder>
+</Solution>

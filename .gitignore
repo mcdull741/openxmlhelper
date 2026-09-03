@@ -1,0 +1,18 @@
+## .NET build output
+bin/
+obj/
+
+## Nested/exploration projects (not part of the solution)
+/openxmlhelper/
+/probe/
+
+## User-specific IDE files
+*.user
+*.suo
+
+## OS files
+Thumbs.db
+.DS_Store
+
+## Logs
+*.log
