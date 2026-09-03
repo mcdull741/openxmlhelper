@@ -680,9 +680,28 @@ public static class OpenXmlHelper
             dim.Reference = newRef;
     }
 
+    /// <summary>
+    /// 标记 Excel 下次打开时进行完整重算，并删除已失效的 CalculationChain 部件。
+    /// <para>
+    /// 当我们删除行/列/单元格或修改公式后，<c>/xl/calcChain.xml</c>（计算链）中缓存的
+    /// 公式计算顺序与依赖关系会变成陈旧数据；Excel 打开文件时检测到不一致后会进入
+    /// 修复流程并报告“Removed records:formula from /xl/calcChain.xml part”。
+    /// </para>
+    /// <para>
+    /// 解决方法：删除 CalculationChainPart 并设置 FullCalculationOnLoad = true。
+    /// 丢失 calcChain 不影响数据语义，Excel 会在打开文件时自动重建计算链并重算所有公式。
+    /// </para>
+    /// </summary>
     private static void MarkFullRecalc(WorkbookPart wbPart)
     {
+        // 1) 删除已失效的计算链部件（calcChain.xml），避免 Excel 修复警告
+        if (wbPart.CalculationChainPart is not null)
+            wbPart.DeletePart(wbPart.CalculationChainPart);
+
+        // 2) 设置打开时全量重算，确保公式值与依赖图完全刷新
         wbPart.Workbook.CalculationProperties ??= new CalculationProperties();
         wbPart.Workbook.CalculationProperties.FullCalculationOnLoad = true;
+        // 强制下一次打开执行完全重算（忽略缓存的 dirty 标记）
+        wbPart.Workbook.CalculationProperties.ForceFullCalculation = true;
     }
 }
